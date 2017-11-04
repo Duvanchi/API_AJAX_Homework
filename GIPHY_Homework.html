@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>GIPHY</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+</head>
+<body>
+
+<h1 id="giphy">GIFS!</h1>
+
+<div class="container">
+ 	<div class="row">
+ 		<div class="col-lg-6">
+ 				<div class="form-group">
+		 			<div class="input-group">
+		 				 <form id="topic-form">
+					      <label for="topic-input">Add a topic Breh</label>
+					      <input type="text" id="topic-input"><br>
+					      <input id="add-topic" type="submit" value="Add a topic breh">
+					    </form>
+		 			</div>
+		 		</div>
+		 	</div>
+		 </div>
+			<div id="buttonBox"></div>
+			<div id="gifBox"></div>
+		</div>
+
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+ <script type="text/javascript">
+  	
+  	var topics = ["dog", "cat", "sloth"];
+  	var still = true
+  	var moving = false
+  	console.log(topics)
+
+  	renderButtons();
+
+  	function displayGIFS () {
+
+  		var topic = $(this).attr("data-topic");
+  		var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + topic + "&api_key=pNR3KrFuYp6A4LvsihcKF1MzSdN1ls0n&limit=10";
+
+  		$.ajax({
+          url: queryURL,
+          method: "GET"
+        }).done(function(response) {
+        		var results = response.data;
+
+        		for (var i = 0; i < results.length; i++) {
+
+        			var gifDiv = $('<div>');
+        			var p = $('<p>').text("Rating: " + results[i].rating);
+        			var gifImage = $('<img>');
+              // leaving this in to show that I do know how to pull the gifs in a still state
+        			// gifImage.attr("src", results[i].images.fixed_height_still.url);
+              gifImage.attr("src", results[i].images.fixed_height.url);
+              gifImage.addClass("stillGifs");
+        			gifDiv.prepend(p);
+        			gifDiv.append(gifImage);
+        			$("#gifBox").prepend(gifDiv);
+            }
+        	})
+  	     };
+
+  	function renderButtons() {
+  	    $('#buttonBox').empty();
+
+    		for (i = 0; i < topics.length; i++) {
+
+    			var a = $("<button>");
+    			a.addClass("gif");
+    			a.attr("data-topic", topics[i]);
+    			a.text(topics[i]);
+    			$("#buttonBox").append(a);
+    		}
+    	};
+
+  	$('#add-topic').on('click', function(event) {
+  		event.preventDefault();
+
+  		var topic = $("#topic-input").val().trim();
+  		topics.push(topic);
+  		console.log(topics);
+  		renderButtons();
+  	});
+
+$(document).on('click', '.gif', displayGIFS);
+
+
+// I found this on stack overflow. It seemed like a good solution, but I can't get the 'replace' method to actually read the values I'm trying to replace.  This is the best I've got right now, I tried some other stuff but this one feels like the closest to actually working. 
+  
+$("#gifBox").on('click', function() {
+  
+  var src = $(this).attr("src");
+
+  if ($(this).hasClass("stillGifs")) {
+      $(this).attr('src', src.replace(/\_s,gif/i, ".gif"));
+      $(this).removeClass('stillGifs');
+  }
+
+  else {
+    $(this).addClass('stillGifs');
+    $(this).attr('src', src.replace(/\.gif/i, "_s.gif"));
+  }
+});
+
+  
+
+  	// for loop here (topics array, append buttons)
+
+
+
+
+
+
+
+
+  	// 1. pick a theme
+  	// 2. create for loop (topics array as target element)
+  	// 3. Use loop to create buttons for UI
+  	// 4. connect api
+  	// 5. "click" function will grab 10 static gifs from API
+  	// 6. additional "click" function to animate gifs (returns to static when clicked again)
+  	// 7. sort and display gifs by rating
+  	// 8. use input box to allow user to create new strings in "topics" array
+
+
+  </script>
+
+
+</body>
+</html>
